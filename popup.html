@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Productivity Suite</title>
+    <style>
+      :root {
+        /* Apple System Dark Mode Palette */
+        --bg-root: #000000;
+        --surface-glass: rgba(28, 28, 30, 0.65);
+        --surface-glass-elevated: rgba(44, 44, 46, 0.65);
+        --surface-solid: #1c1c1e;
+        --border-subtle: rgba(255, 255, 255, 0.1);
+        --border-active: rgba(255, 255, 255, 0.25);
+        
+        --text-primary: #ffffff;
+        --text-secondary: rgba(235, 235, 245, 0.6);
+        
+        --accent-blue: #0A84FF;
+        --accent-blue-hover: #0070DF;
+        --accent-red: #FF453A;
+        --accent-red-hover: rgba(255, 69, 58, 0.15);
+        
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        width: 360px;
+        min-height: 500px;
+        background: var(--bg-root);
+        color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
+        font-size: 13px;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Reusable Glass Utility */
+      .glass {
+        background: var(--surface-glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+
+      /* Header */
+      .header {
+        padding: 16px;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .header-icon {
+        width: 28px;
+        height: 28px;
+        background: var(--accent-blue);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #fff;
+      }
+
+      .header-title {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--text-primary);
+      }
+
+      .header-sub {
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-top: 2px;
+      }
+
+      /* Segmented Control (Tabs) */
+      .tabs-container {
+        padding: 12px 16px;
+      }
+
+      .tabs {
+        display: flex;
+        background: var(--surface-solid);
+        border-radius: var(--radius-md);
+        padding: 2px;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 6px 0;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tab.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Panels */
+      .panel {
+        display: none;
+        padding: 0 16px 16px;
+        flex: 1;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .panel.active { display: block; }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+
+      /* Section label */
+      .section-label {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        margin-top: 16px;
+      }
+
+      .section-label:first-child { margin-top: 0; }
+
+      /* Inputs */
+      .input-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      input[type="text"], textarea {
+        flex: 1;
+        background: var(--surface-glass-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 10px 12px;
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      input[type="text"]::placeholder, textarea::placeholder {
+        color: var(--text-secondary);
+      }
+
+      input[type="text"]:focus, textarea:focus {
+        border-color: var(--accent-blue);
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 180px;
+        resize: vertical;
+        line-height: 1.5;
+        margin-bottom: 12px;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 14px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .btn-primary {
+        background: var(--accent-blue);
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-blue-hover);
+      }
+
+      .btn-ghost {
+        background: var(--surface-solid);
+        color: var(--text-primary);
+        border: 1px solid var(--border-subtle);
+      }
+
+      .btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--border-active);
+      }
+
+      .btn-danger-ghost {
+        background: transparent;
+        color: var(--text-secondary);
+        padding: 6px;
+        border-radius: var(--radius-sm);
+      }
+
+      .btn-danger-ghost:hover {
+        background: var(--accent-red-hover);
+        color: var(--accent-red);
+      }
+
+      .btn-restore {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        border: 1px solid var(--border-subtle);
+        padding: 6px 12px;
+        font-size: 11px;
+        border-radius: var(--radius-sm);
+      }
+
+      .btn-restore:hover {
+        background: var(--accent-blue);
+        border-color: var(--accent-blue);
+      }
+
+      .btn-full {
+        width: 100%;
+      }
+
+      /* Sessions list */
+      #sessions-list { display: flex; flex-direction: column; gap: 8px; }
+
+      .session-card {
+        background: var(--surface-glass-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .session-info { flex: 1; min-width: 0; }
+
+      .session-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .session-count {
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
+
+      .session-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
+
+      .empty-state {
+        text-align: center;
+        padding: 32px 0;
+        color: var(--text-secondary);
+        font-size: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .empty-icon {
+        color: var(--border-active);
+      }
+
+      /* Toast Notification */
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translate(-50%, 20px);
+        background: var(--surface-glass-elevated);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-subtle);
+        border-radius: 100px;
+        padding: 8px 16px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #toast.show {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+
+      /* Footer */
+      .footer {
+        padding: 16px;
+        border-top: 1px solid var(--border-subtle);
+        margin-top: auto;
+      }
+      
+      /* SVG Utilites */
+      .icon-sm { width: 14px; height: 14px; }
+      .icon-md { width: 16px; height: 16px; }
+      .icon-lg { width: 32px; height: 32px; }
+    </style>
+  </head>
+  <body>
+
+    <div class="header glass">
+      <div class="header-icon">
+        <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="header-title">Productivity Suite</div>
+        <div class="header-sub">Workspace &amp; Notes</div>
+      </div>
+    </div>
+
+    <div class="tabs-container">
+      <div class="tabs">
+        <button class="tab active" data-tab="sessions">Sessions</button>
+        <button class="tab" data-tab="notes">Notes</button>
+      </div>
+    </div>
+
+    <div class="panel active" id="panel-sessions">
+      <div class="section-label">Save Current Window</div>
+      <div class="input-row">
+        <input type="text" id="sessionName" placeholder="Name this workspace..." />
+        <button class="btn btn-primary" data-testid="save-session-btn">Save</button>
+      </div>
+
+      <div class="section-label">Saved Workspaces</div>
+      <div data-testid="sessions-list" id="sessions-list">
+        </div>
+    </div>
+
+    <div class="panel" id="panel-notes">
+      <div class="section-label">Quick Notes</div>
+      <textarea
+        data-testid="notes-textarea"
+        id="notes-textarea"
+        placeholder="Type your notes here..."
+      ></textarea>
+      <button class="btn btn-primary btn-full" data-testid="save-notes-btn">Save Notes</button>
+    </div>
+
+    <div class="footer glass">
+      <button class="btn btn-ghost btn-full" data-testid="open-options-btn">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        Preferences
+      </button>
+    </div>
+
+    <div id="toast">
+      <span id="toast-icon"></span>
+      <span id="toast-msg">Saved successfully</span>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

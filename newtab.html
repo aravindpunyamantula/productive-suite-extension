@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab</title>
+  <style>
+    :root {
+      /* Deep Apple Dark Mode */
+      --bg-root: #000000;
+      --surface-glass: rgba(28, 28, 30, 0.5);
+      --surface-glass-hover: rgba(44, 44, 46, 0.6);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(255, 255, 255, 0.15);
+      
+      --text-primary: #ffffff;
+      --text-secondary: rgba(235, 235, 245, 0.5);
+      --text-tertiary: rgba(235, 235, 245, 0.3);
+      
+      --accent-blue: #0A84FF;
+      --accent-blue-hover: #0070DF;
+      
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+      background-color: var(--bg-root);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      
+      /* Subtle radial ambient light to give depth without tacky gradients */
+      background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+    }
+
+    /* Ambient animated mesh backdrop */
+    .ambient-glow {
+      position: absolute;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, rgba(10, 132, 255, 0.04) 0%, transparent 60%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .dashboard {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1100px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      opacity: 0;
+      animation: dashFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes dashFadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Header: Clock & Greeting */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .clock-display {
+      font-size: 84px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .date-display {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .greeting {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    /* Bento Grid Layout */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      height: 400px;
+    }
+
+    /* Glass Cards */
+    .glass-card {
+      background: var(--surface-glass);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .glass-card:hover {
+      border-color: var(--border-active);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-icon {
+      color: var(--text-secondary);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    /* Content Areas */
+    .card-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    /* Custom Scrollbar */
+    .card-content::-webkit-scrollbar {
+      width: 4px;
+    }
+    .card-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .card-content::-webkit-scrollbar-thumb {
+      background: var(--border-active);
+      border-radius: 10px;
+    }
+
+    /* Notes Typography */
+    #widget-notes {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      font-family: ui-monospace, "SF Mono", "Menlo", monospace;
+    }
+
+    /* Session List */
+    #widget-sessions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .session-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s ease;
+    }
+
+    .session-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .session-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .session-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .session-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-restore {
+      background: var(--text-primary);
+      color: var(--bg-root);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn-restore:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-restore:active {
+      transform: scale(0.95);
+    }
+
+    /* Empty States */
+    .empty-state {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      color: var(--text-tertiary);
+      text-align: center;
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* SVG Utilities */
+    .icon-md { width: 20px; height: 20px; }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow"></div>
+
+  <div class="dashboard">
+    <header class="header">
+      <div class="clock-display" id="clock">00:00</div>
+      <div class="date-display" id="date">Loading date...</div>
+      <div class="greeting" id="greeting">Hello.</div>
+    </header>
+
+    <div class="bento-grid">
+      
+      <div class="glass-card">
+        <div class="card-header">
+          <svg class="card-icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <div class="card-title">Scratchpad</div>
+        </div>
+        <div class="card-content" id="widget-notes" data-testid="widget-notes">
+          </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-header">
+          <svg class="card-icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          <div class="card-title">Workspaces</div>
+        </div>
+        <div class="card-content" id="widget-sessions" data-testid="widget-sessions">
+          </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="newtab.js"></script>
+
+</body>
+</html>
