@@ -133,8 +133,7 @@ async function exportData() {
     a.href = url;
     
     // Append date to the filename for better organization
-    const dateStr = new Date().toISOString().split('T')[0];
-    a.download = `productivity_suite_backup_${dateStr}.json`;
+    a.download = 'productivity_suite_export.json';
     
     a.click();
     URL.revokeObjectURL(url);
